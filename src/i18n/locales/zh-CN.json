@@ -1577,6 +1577,12 @@
     }
   },
   "quota_management": {
+    "show_emails": "显示邮箱",
+    "hide_emails": "隐藏邮箱",
+    "summary_value": "{{sum}}%（共 {{total}}%）",
+    "summary_show": "展开",
+    "summary_hide": "收起",
+    "summary_no_reset": "暂无重置计划",
     "search_label": "搜索账号",
     "search_placeholder": "按文件名或邮箱搜索",
     "search_empty_title": "没有匹配的账号",

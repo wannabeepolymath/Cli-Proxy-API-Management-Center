@@ -1578,6 +1578,12 @@
     }
   },
   "quota_management": {
+    "show_emails": "이메일 표시",
+    "hide_emails": "이메일 숨기기",
+    "summary_value": "{{total}}% 중 {{sum}}%",
+    "summary_show": "표시",
+    "summary_hide": "숨기기",
+    "summary_no_reset": "예정된 초기화 없음",
     "search_label": "계정 검색",
     "search_placeholder": "파일명 또는 이메일로 검색",
     "search_empty_title": "일치하는 계정 없음",

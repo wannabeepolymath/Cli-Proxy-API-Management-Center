@@ -1581,6 +1581,12 @@
     }
   },
   "quota_management": {
+    "show_emails": "Показать email",
+    "hide_emails": "Скрыть email",
+    "summary_value": "{{sum}}% из {{total}}%",
+    "summary_show": "Показать",
+    "summary_hide": "Скрыть",
+    "summary_no_reset": "Сброс не ожидается",
     "search_label": "Поиск аккаунтов",
     "search_placeholder": "Поиск по имени файла или электронной почте",
     "search_empty_title": "Аккаунты не найдены",

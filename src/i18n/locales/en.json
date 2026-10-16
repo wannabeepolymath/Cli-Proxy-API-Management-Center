@@ -1578,6 +1578,12 @@
     }
   },
   "quota_management": {
+    "show_emails": "Show emails",
+    "hide_emails": "Hide emails",
+    "summary_value": "{{sum}}% of {{total}}%",
+    "summary_show": "Show",
+    "summary_hide": "Hide",
+    "summary_no_reset": "No reset pending",
     "search_label": "Search accounts",
     "search_placeholder": "Search by filename or email",
     "search_empty_title": "No matching accounts",

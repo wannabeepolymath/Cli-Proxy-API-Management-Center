@@ -25,7 +25,10 @@ import { getQuotaCacheKey } from '@/utils/quota/identity';
 import { ProviderTabs } from '@/features/authFiles/components/ProviderTabs';
 import { QuotaHeader } from './components/QuotaHeader';
 import { QuotaCard } from './components/QuotaCard';
+import { QuotaSummaryCards } from './components/QuotaSummaryCards';
 import { QuotaTimeline } from './components/QuotaTimeline';
+import { maskEmailsInText } from './emailMask';
+import { buildProviderSummaries } from './summary';
 import {
   CARD_ENTRANCE_BUDGET_MS,
   QUOTA_PAGE_SIZE,
@@ -56,12 +59,6 @@ import styles from './QuotaPage.module.scss';
 const TAB_IDS: string[] = ['all', ...QUOTA_TAB_ORDER];
 const SKELETON_CARD_COUNT = 6;
 
-/**
- * Existing providers display filenames; Devin's card and timeline share an
- * identity-aware display label. Keep the filename fallback stable for memoization.
- */
-const displayNameFor = (name: string) => name;
-
 export function QuotaPage() {
   const { t } = useTranslation();
   const connectionStatus = useAuthStore((state) => state.connectionStatus);
@@ -76,6 +73,7 @@ export function QuotaPage() {
   );
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
+  const [showEmails, setShowEmails] = useState(() => readQuotaUiState()?.showEmails ?? false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   // 页头 + tabs 的入场级联（标题 → meta → 动作 → tabs，级差 70ms）
   const revealRef = useRevealGroup<HTMLDivElement>();
@@ -210,6 +208,28 @@ export function QuotaPage() {
     writeQuotaUiState({ sortMode: next as QuotaSortMode });
   }, []);
 
+  const handleToggleShowEmails = useCallback(() => {
+    setShowEmails((prev) => {
+      writeQuotaUiState({ showEmails: !prev });
+      return !prev;
+    });
+  }, []);
+
+  /**
+   * Devin's card and timeline share an identity-aware display label; everyone
+   * else shows filenames. Both get the email mask unless the user opted out.
+   */
+  const displayNameFor = useCallback(
+    (name: string) => (showEmails ? name : maskEmailsInText(name)),
+    [showEmails]
+  );
+
+  // 汇总卡只在「全部」tab 且无搜索时出现：按 provider 聚合当前已加载的额度。
+  const providerSummaries = useMemo(
+    () => (tab === 'all' && !search.trim() ? buildProviderSummaries(entries, getQuota) : []),
+    [tab, search, entries, getQuota]
+  );
+
   const sortOptions = useMemo(
     () =>
       QUOTA_SORT_MODES.map((mode) => ({ value: mode, label: t(`quota_management.sort_${mode}`) })),
@@ -331,6 +351,8 @@ export function QuotaPage() {
         attentionCount={attentionCount}
         refreshing={loading || batchLoading}
         disableControls={disableControls}
+        showEmails={showEmails}
+        onToggleShowEmails={handleToggleShowEmails}
         onRefreshAll={handleRefreshAll}
       />
 
@@ -345,6 +367,10 @@ export function QuotaPage() {
             onChange={handleTabChange}
           />
         </div>
+
+        {!loading && providerSummaries.length > 0 && (
+          <QuotaSummaryCards summaries={providerSummaries} resolvedTheme={resolvedTheme} />
+        )}
 
         <div className={styles.toolbar}>
           <div className={styles.search}>
@@ -433,6 +459,7 @@ export function QuotaPage() {
                 quota={getQuota(entry)}
                 resolvedTheme={resolvedTheme}
                 canRefresh={canUseActions && !entry.file.disabled}
+                maskEmails={!showEmails}
                 resetting={resettingQuotaName === getQuotaCacheKey(entry.file)}
                 entranceDelayMs={cardEntranceDelay(index)}
                 onRefresh={() => void refreshQuota(entry.file, QUOTA_ADAPTERS[entry.type])}

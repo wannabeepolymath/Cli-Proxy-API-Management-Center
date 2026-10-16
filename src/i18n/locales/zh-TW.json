@@ -1605,6 +1605,12 @@
     }
   },
   "quota_management": {
+    "show_emails": "顯示信箱",
+    "hide_emails": "隱藏信箱",
+    "summary_value": "{{sum}}%（共 {{total}}%）",
+    "summary_show": "展開",
+    "summary_hide": "收起",
+    "summary_no_reset": "暫無重置排程",
     "search_label": "搜尋帳號",
     "search_placeholder": "依檔案名稱或電子郵件搜尋",
     "search_empty_title": "沒有符合的帳號",
